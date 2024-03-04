@@ -1,0 +1,118 @@
+version: "3.7"
+services:
+    app:
+        build:
+            args:
+                user: sammy
+                uid: 1000
+            context: ./
+            dockerfile: Dockerfile
+        container_name: app
+        restart: unless-stopped
+        working_dir: /var/www/
+        volumes:
+            - ./:/var/www
+        networks:
+            - eventlist
+        command: ["sh", "-c", "composer install && php artisan migrate && php artisan db:seed"]
+
+    db:
+        image: mysql:8.0
+        container_name: eventlist-db
+        restart: unless-stopped
+        environment:
+            MYSQL_DATABASE: laravel
+            MYSQL_ROOT_PASSWORD: laravel
+            MYSQL_PASSWORD: laravel
+            MYSQL_USER: laravel
+            SERVICE_TAGS: dev
+            SERVICE_NAME: db
+        networks:
+            - eventlist
+
+    nginx:
+        image: nginx:alpine
+        container_name: eventlist-nginx
+        restart: unless-stopped
+        ports:
+            - 8000:80
+        volumes:
+            - ./:/var/www
+            - ./docker-compose/nginx:/etc/nginx/conf.d/
+        networks:
+            - eventlist
+
+    test_db:
+        image: mysql:8.0
+        container_name: test_db
+        restart: unless-stopped
+        tty: true
+        volumes:
+            - test_dbdata:/var/lib/mysql/
+        ports:
+            - "3307:3306"
+        environment:
+            MYSQL_DATABASE: laravel
+            MYSQL_ROOT_PASSWORD: laravel
+        networks:
+            - eventlist
+
+    postgresql:
+        image: postgres
+        container_name: postgresql
+        restart: unless-stopped
+        environment:
+            POSTGRES_USER: sonar
+            POSTGRES_PASSWORD: sonar
+            POSTGRES_DB: sonar
+        volumes:
+            - postgresql:/var/lib/postgresql
+            - postgresql_data:/var/lib/postgresql/data
+        ports:
+            - "5433:5432"
+        networks:
+            - eventlist
+
+    redis:
+        image: redis:alpine
+        container_name: redis
+        restart: unless-stopped
+        ports:
+            - "5433:5432"
+        networks:
+            - eventlist
+
+    sonarqube:
+        image: sonarqube:community
+        container_name: sonarqube
+        restart: unless-stopped
+        environment:
+            - sonar.jdbc.url=jdbc:postgresql://postgresql:5433/sonar
+            - sonar.jdbc.username=sonar
+            - sonar.jdbc.password=sonar
+        volumes:
+            - sonarqube_conf:/opt/sonarqube/conf
+            - sonarqube_data:/opt/sonarqube/data
+            - sonarqube_extensions:/opt/sonarqube/extensions
+            - sonarqube_bundled-plugins:/opt/sonarqube/lib/bundled-plugins
+        ports:
+            - "127.0.0.1:8080:9000"
+        expose:
+            - 9000
+        depends_on:
+            - postgresql
+        networks:
+            - eventlist
+
+networks:
+    eventlist:
+        driver: bridge
+volumes:
+    sonarqube_conf:
+    sonarqube_data:
+    sonarqube_extensions:
+    sonarqube_bundled-plugins:
+    postgresql:
+    postgresql_data:
+    dbdata:
+    test_dbdata:
