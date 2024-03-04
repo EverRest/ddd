@@ -6,6 +6,7 @@ namespace App\Infrastructure\Event\Service\Util;
 
 use App\Domain\Event\Enum\RecurringTypeEnum;
 use Illuminate\Support\Carbon;
+use InvalidArgumentException;
 
 class DateHelper
 {
@@ -21,6 +22,7 @@ class DateHelper
             RecurringTypeEnum::WEEKLY->value => $endDate->clone()->diffInWeeks($startDate),
             RecurringTypeEnum::MONTHLY->value => $endDate->clone()->diffInMonths($startDate),
             RecurringTypeEnum::YEARLY->value => $endDate->clone()->diffInYears($startDate),
+            default => throw new InvalidArgumentException("Unsupported type: $type"),
         };
     }
 
@@ -42,6 +44,7 @@ class DateHelper
                 RecurringTypeEnum::WEEKLY->value => $startDate->clone()->addWeeks($i),
                 RecurringTypeEnum::MONTHLY->value => $startDate->clone()->addMonths($i),
                 RecurringTypeEnum::YEARLY->value => $startDate->clone()->addYears($i),
+                default => throw new InvalidArgumentException("Unsupported type: $type"),
             };
         }
 

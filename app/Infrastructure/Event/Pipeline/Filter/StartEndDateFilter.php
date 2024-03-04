@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Event\Pipeline\Filter;
 
+use App\Domain\Event\IEventRepository;
 use App\Domain\Event\IEventService;
 use Closure;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\App;
 
 class StartEndDateFilter
@@ -30,9 +31,9 @@ class StartEndDateFilter
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
         if ($startDate && $endDate) {
-            /** @var IEventService $service */
-            $service = App::make(IEventService::class);
-            $service->filterEventsWithFromToQuery($startDate, $endDate);
+            /** @var IEventRepository $repository */
+            $repository = App::make(IEventRepository::class);
+            $repository->filterEventsWithFromToQuery($query, $startDate, $endDate);
         }
 
         return $next($query);

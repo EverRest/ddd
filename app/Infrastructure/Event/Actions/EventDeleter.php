@@ -35,7 +35,7 @@ class EventDeleter
 
             return $eventModel;
         } catch (Exception $e) {
-            DB::rollback();
+            DB::rollBack();
             throw $e;
         }
     }

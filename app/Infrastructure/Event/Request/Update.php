@@ -10,6 +10,10 @@ use App\Infrastructure\Event\Rules\StartDayRule;
 use App\Infrastructure\Laravel\Model\EventModel;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * @property string $start
+ * @property string $end
+ */
 final class Update extends FormRequest
 {
     /**

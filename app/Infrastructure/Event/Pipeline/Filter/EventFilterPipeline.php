@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Event\Pipeline\Filter;
 
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder;
 use League\Pipeline\Pipeline;
 
 class EventFilterPipeline
@@ -34,10 +34,9 @@ class EventFilterPipeline
     public function apply(Builder $query): Builder
     {
         $pipeline = new Pipeline();
-        foreach ($this->filters as $filter => $value) {
-            $filterInstance = new $filter($value);
+        foreach ($this->filters as $filterClass) {
             $pipeline = $pipeline->pipe(
-                fn($payload) => $filterInstance($payload[0], $payload[1])
+                fn($payload) => new $filterClass($payload[0], $payload[1])
             );
         }
 

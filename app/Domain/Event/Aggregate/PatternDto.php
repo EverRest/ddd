@@ -15,7 +15,7 @@ use Spatie\LaravelData\Data;
 
 /**
  * @property-read Carbon $start
- * @property-read Carbon $datePattern
+ * @property-read string|array $datePattern
  * @property-read Carbon $end
  * @property-read Carbon $repeat_until
  * @property-read int|null $start_time
@@ -25,7 +25,7 @@ final class PatternDto extends Data
 {
     /**
      * @param Carbon $start
-     * @param Carbon $datePattern
+     * @param string|array $datePattern
      * @param Carbon $end
      * @param int|null $start_time
      * @param int|null $end_time

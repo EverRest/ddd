@@ -13,6 +13,7 @@ use App\Infrastructure\Event\Trait\HasRemoveEmptyValuesFromArray;
 use App\Infrastructure\Laravel\Model\EventModel;
 use App\Infrastructure\Laravel\Model\RecurringPatternModel;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -35,7 +36,7 @@ class EventUpdater
      * @return EventModel
      * @throws Throwable
      */
-    public function run(EventModel $model, array $attributes): EventModel
+    public function run(Model $model, array $attributes): EventModel
     {
         if ($model->recurringPattern->repeat_until) {
             $model = $this->updateRecurringEvent($model, $attributes);
@@ -80,7 +81,7 @@ class EventUpdater
 
             return $model;
         } catch (Exception $e) {
-            DB::rollback();
+            DB::rollBack();
             throw $e;
         }
     }

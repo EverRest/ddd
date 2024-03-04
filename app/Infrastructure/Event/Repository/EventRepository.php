@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Event\Repository;
 
-use App\Domain\Event\Aggregate\DateDto;
 use App\Domain\Event\IEventRepository;
 use App\Domain\Shared\Repository;
 use App\Infrastructure\Event\Pipeline\Filter\EventFilterPipeline;
 use App\Infrastructure\Event\Pipeline\Filter\StartEndDateFilter;
 use App\Infrastructure\Laravel\Model\EventModel;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Carbon;
 
 final class EventRepository extends Repository implements IEventRepository
 {
@@ -49,9 +47,9 @@ final class EventRepository extends Repository implements IEventRepository
         return !$this->query()
             ->whereBetween('start', [$start, $end])
             ->orWhereBetween('end', [$start, $end])
-            ->whereHas('recurringPattern', function (Builder $query) use ($start, $end) {
+            ->whereHas('recurringPattern', function (Builder $query) use ($start) {
                 $query->where(
-                    function (Builder $query) use ($start, $end) {
+                    function (Builder $query) use ($start) {
                         $query->whereNull('repeat_until')
                             ->orWhere('repeat_until', '>=', $start);
                     }

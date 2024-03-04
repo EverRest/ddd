@@ -5,10 +5,20 @@ declare(strict_types=1);
 namespace App\Domain\Event\Aggregate;
 
 use App\Infrastructure\Laravel\Model\EventModel;
+use App\Infrastructure\Laravel\Model\RecurringPatternModel;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Carbon;
 
-/** @mixin EventModel */
+/**
+ * @mixin EventModel
+ *
+ * @property int $id
+ * @property string $title
+ *  @property string $description
+ * @property int $start
+ * @property int $end
+ * @property RecurringPatternModel $recurringPattern
+ */
 class EventResource extends JsonResource
 {
     /**

@@ -34,11 +34,6 @@ final class CreateRecurringPatternData extends Data
         #[MapInputName('frequency')]
         public readonly string|null $frequency
     ) {
-        if ($this->frequency) {
-            $recurringTypeService = App::make(IRecurringTypeService::class);
-            $recurringType = $recurringTypeService->getRecurringTypeByCode($this->frequency);
-            $this->recurring_type_id = $recurringType->id;
-        }
     }
 
     /**

@@ -16,8 +16,8 @@ use App\Infrastructure\Event\Actions\EventUpdater;
 use App\Infrastructure\Laravel\Model\EventModel;
 use Exception;
 use Illuminate\Contracts\Pagination\Paginator;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 use Throwable;
 
@@ -56,7 +56,7 @@ final class EventService extends CrudService implements IEventService
     }
 
     /**
-     * @param mixed $model
+     * @param EventModel $model
      * @param array $attributes
      *
      * @return EventModel
@@ -64,7 +64,8 @@ final class EventService extends CrudService implements IEventService
      */
     public function update(Model $model, array $attributes): EventModel
     {
-        return (new EventUpdater($this->repository, $this->recurringPatternService))->run($model, $attributes);
+        return (new EventUpdater($this->repository, $this->recurringPatternService))
+            ->run($model, $attributes);
     }
 
     /**
@@ -87,9 +88,9 @@ final class EventService extends CrudService implements IEventService
      *
      * @return Builder
      */
-    public function filterEventsWithFromToQuery(string $startDate, string $endDate): Builder
+    public function filterEventsWithFromToQuery(Builder $q, string $startDate, string $endDate): Builder
     {
-        return $this->repository->filterEventsWithFromToQuery($this->repository->query(), $startDate, $endDate);
+        return $this->repository->filterEventsWithFromToQuery($q, $startDate, $endDate);
     }
 
     /**

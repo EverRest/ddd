@@ -2,9 +2,8 @@
 
 namespace App\Domain\Event;
 
-use App\Domain\Event\Aggregate\DateDto;
 use App\Domain\Shared\IRepository;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder;
 
 interface IEventRepository extends IRepository
 {

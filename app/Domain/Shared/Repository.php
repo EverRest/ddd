@@ -6,11 +6,13 @@ namespace App\Domain\Shared;
 
 use App\Domain\Shared\Enum\ListRequestEnum;
 use Illuminate\Contracts\Pagination\Paginator;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection as IlluminateCollection;
 use Illuminate\Support\Facades\App;
 use Throwable;
 
@@ -46,9 +48,9 @@ class Repository implements IRepository
      *
      * @param array $data
      *
-     * @return Collection
+     * @return IlluminateCollection
      */
-    public function getList(array $data = []): Collection
+    public function getList(array $data = []): IlluminateCollection
     {
         $query = $this->listQuery($data);
 
@@ -169,7 +171,7 @@ class Repository implements IRepository
      */
     public function destroyAll(): void
     {
-        in_array(SoftDeletes::class, class_uses($this->query()->getModel()), true) ?
+        in_array(SoftDeletes::class, $this->model()->getFillable(), true) ?
             $this->model::all()->each(fn(Model $model) => $model->delete()) :
             $this->model::truncate();
     }
@@ -292,12 +294,12 @@ class Repository implements IRepository
     }
 
     /**
-     * @param $query
+     * @param Builder $query
      * @param array $data
      *
      * @return Builder
      */
-    protected function sort($query, array $data): Builder
+    protected function sort(Builder $query, array $data): Builder
     {
         $sort = $this->getSortColumn($data);
         $order = $this->getDirectionColumn($data);

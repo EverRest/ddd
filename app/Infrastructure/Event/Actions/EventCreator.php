@@ -55,7 +55,7 @@ class EventCreator
 
             return $event;
         } catch (Exception $e) {
-            DB::rollback();
+            DB::rollBack();
             throw $e;
         }
     }

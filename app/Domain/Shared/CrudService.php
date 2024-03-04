@@ -9,7 +9,7 @@ use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Model;
 use Throwable;
 
-class CrudService implements ICrudService
+class CrudService
 {
     /**
      * @var mixed $repository
