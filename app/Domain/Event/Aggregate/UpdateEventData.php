@@ -20,16 +20,15 @@ final class UpdateEventData extends Data
      */
     public function __construct(
         #[MapInputName('title')]
-        public readonly string|null        $title,
+        public readonly string|null $title,
         #[MapInputName('description')]
-        public readonly string|null        $description,
+        public readonly string|null $description,
         #[WithCastable(CarbonDate::class)]
         #[MapInputName('start')]
-        public  Carbon|null        $start,
+        public Carbon|null $start,
         #[WithCastable(CarbonDate::class)]
         #[MapInputName('end')]
-        public  Carbon|null        $end,
-    )
-    {
+        public Carbon|null $end,
+    ) {
     }
 }

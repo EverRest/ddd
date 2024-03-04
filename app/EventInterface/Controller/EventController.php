@@ -22,10 +22,7 @@ class EventController extends Controller
      * @param Dispatcher $dispatcher
      * @param EventService $eventService
      */
-    public function __construct(
-        Dispatcher                    $dispatcher,
-        private readonly EventService $eventService,
-    )
+    public function __construct(Dispatcher $dispatcher, private readonly EventService $eventService,)
     {
         parent::__construct($dispatcher);
     }

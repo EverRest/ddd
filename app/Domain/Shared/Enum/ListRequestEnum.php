@@ -9,6 +9,7 @@ use App\Infrastructure\Event\Trait\EnumHasToArray;
 enum ListRequestEnum: string
 {
     use EnumHasToArray;
+
     case searchKey = 'search';
     case limitKey = 'limit';
     case pageKey = 'page';

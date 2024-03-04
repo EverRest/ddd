@@ -11,8 +11,8 @@ use Illuminate\Support\Carbon;
 
 final class CarbonDate implements Castable
 {
-    public function __construct(public string $date) {
-
+    public function __construct(public string $date)
+    {
     }
 
     /**
@@ -23,7 +23,8 @@ final class CarbonDate implements Castable
     public static function dataCastUsing(...$arguments): Cast
     {
         return new class implements Cast {
-            public function cast(DataProperty $property, mixed $value, array $context): Carbon {
+            public function cast(DataProperty $property, mixed $value, array $context): Carbon
+            {
                 return Carbon::parse($value, 'CET')->setTimezone('UTC');
             }
         };

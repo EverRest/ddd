@@ -34,13 +34,13 @@ final class PatternDto extends Data
     public function __construct(
         #[WithCastable(CarbonDate::class)]
         #[MapInputName('start')]
-        public readonly Carbon   $start,
+        public readonly Carbon $start,
         #[WithTransformer(DateToPatternTransformer::class)]
         #[MapInputName('start')]
-        public readonly string|array   $datePattern,
+        public readonly string|array $datePattern,
         #[WithCastable(CarbonDate::class)]
         #[MapInputName('end')]
-        public readonly Carbon   $end,
+        public readonly Carbon $end,
         #[WithTransformer(TimeToSecondsTransformer::class)]
         #[MapInputName('start')]
         public readonly int|null $start_time,
@@ -49,8 +49,7 @@ final class PatternDto extends Data
         public readonly int|null $end_time,
         #[WithCastable(CarbonDate::class)]
         #[MapInputName('repeat_until')]
-        public readonly Carbon   $repeat_until,
-    )
-    {
+        public readonly Carbon $repeat_until,
+    ) {
     }
 }

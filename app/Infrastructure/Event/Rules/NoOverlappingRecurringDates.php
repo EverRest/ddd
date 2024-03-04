@@ -16,11 +16,10 @@ final class NoOverlappingRecurringDates implements Rule
      * @param string|null $repeat_until
      */
     public function __construct(
-        protected readonly ?int   $eventId = null,
+        protected readonly ?int $eventId = null,
         protected readonly string $end = '',
         protected readonly ?string $repeat_until = null,
-    )
-    {
+    ) {
     }
 
     /**
@@ -34,7 +33,7 @@ final class NoOverlappingRecurringDates implements Rule
         /** @var IEventService $service */
         $service = App::make(IEventService::class);
 
-        return $service->checkOverlapping( $value,  $this->end, $this->repeat_until);
+        return $service->checkOverlapping($value, $this->end, $this->repeat_until);
     }
 
     /**

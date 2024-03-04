@@ -24,8 +24,7 @@ class EventCreator
     public function __construct(
         private readonly IRecurringPatternService $recurringPatternService,
         private readonly IEventRepository $eventRepository,
-    )
-    {
+    ) {
     }
     /**
      * @param array $attributes
@@ -37,11 +36,18 @@ class EventCreator
     {
         DB::beginTransaction();
         try {
-            $recurringPatternDto = CreateRecurringPatternData::from([...Arr::except($attributes, ['title', 'description',]),]);
+            $recurringPatternDto = CreateRecurringPatternData::from(
+                Arr::except($attributes, ['title', 'description',])
+            );
             /** @var RecurringPatternModel $recurringPattern */
             $recurringPattern = $this->recurringPatternService->create($recurringPatternDto->toArray());
             /** @var EventModel $event */
-            $event = $this->eventRepository->firstOrCreate([...Arr::except($attributes, ['repeat_until', 'frequency',]), 'parent_id' => null, 'recurring_pattern_id' => $recurringPattern->id,]);
+            $event = $this->eventRepository
+                ->firstOrCreate([
+                    ...Arr::except($attributes, ['repeat_until', 'frequency',]),
+                    'parent_id' => null,
+                    'recurring_pattern_id' => $recurringPattern->id,
+                    ]);
             if ($recurringPattern->repeat_until) {
                 $this->saveRecurrenceEvents($event, $recurringPattern, $attributes);
             }
@@ -59,8 +65,11 @@ class EventCreator
      * @param RecurringPatternModel $recurringPattern
      * @param array $attributes
      */
-    private function saveRecurrenceEvents(EventModel $event, RecurringPatternModel $recurringPattern, array $attributes): void
-    {
+    private function saveRecurrenceEvents(
+        EventModel $event,
+        RecurringPatternModel $recurringPattern,
+        array $attributes
+    ): void {
         $eventsData = [
             ...Arr::only($attributes, ['title', 'description', 'end', 'start',]),
             'recurring_pattern' => $recurringPattern,

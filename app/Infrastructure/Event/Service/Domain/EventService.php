@@ -28,10 +28,9 @@ final class EventService extends CrudService implements IEventService
      * @param IRecurringPatternService $recurringPatternService ,
      */
     public function __construct(
-        IEventRepository                          $repository,
+        IEventRepository $repository,
         private readonly IRecurringPatternService $recurringPatternService,
-    )
-    {
+    ) {
         $this->repository = $repository;
     }
 

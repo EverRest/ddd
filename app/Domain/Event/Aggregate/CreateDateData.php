@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Event\Aggregate;
 
-use App\Domain\Event\Aggregate\Cast\CarbonDate;
 use Illuminate\Support\Carbon;
 use Spatie\LaravelData\Attributes\MapInputName;
-use Spatie\LaravelData\Attributes\WithCastable;
 use Spatie\LaravelData\Data;
 
 class CreateDateData extends Data
@@ -28,9 +26,8 @@ class CreateDateData extends Data
         #[MapInputName('end')]
         public readonly Carbon $end,
         #[MapInputName('dates')]
-        public readonly array  $dates,
-    )
-    {
+        public readonly array $dates
+    ) {
         $this->duration = $this->end->clone()->diffInSeconds($this->start);
     }
 

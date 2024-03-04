@@ -22,7 +22,7 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
-        UpdatingEvent::class =>[
+        UpdatingEvent::class => [
             EventChangingDescription::class,
             EventChangingRecurringPattern::class,
         ]

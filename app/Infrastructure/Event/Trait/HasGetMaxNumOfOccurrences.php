@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Infrastructure\Event\Trait;
@@ -13,8 +14,8 @@ trait HasGetMaxNumOfOccurrences
      */
     protected function getMaxNumOfOccurrences(string $type, string|Carbon $start, string|Carbon $end): int
     {
-        $startDate = is_string($start)?Carbon::parse($start):$start;
-        $endDate = is_string($end)?Carbon::parse($start):$end;
+        $startDate = is_string($start) ? Carbon::parse($start) : $start;
+        $endDate = is_string($end) ? Carbon::parse($start) : $end;
 
         return match ($type) {
             RecurringTypeEnum::DAILY->value => $endDate->diffInDays($startDate),

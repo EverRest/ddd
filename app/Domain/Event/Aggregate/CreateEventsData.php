@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain\Event\Aggregate;
@@ -15,7 +16,6 @@ use Spatie\LaravelData\Data;
 
 final class CreateEventsData extends Data
 {
-
     /**
      * @param string $title
      * @param string $description
@@ -27,23 +27,22 @@ final class CreateEventsData extends Data
      */
     public function __construct(
         #[MapInputName('title')]
-        public readonly string                $title,
+        public readonly string $title,
         #[MapInputName('description')]
-        public readonly string                $description,
+        public readonly string $description,
         #[MapInputName('recurring_pattern')]
         public readonly RecurringPatternModel $recurring_pattern,
         #[MapInputName('recurring_type')]
-        public RecurringTypeModel             $recurring_type,
+        public RecurringTypeModel $recurring_type,
         #[MapInputName('start')]
         #[WithCastable(CarbonDate::class)]
-        public readonly string                $start,
+        public readonly string $start,
         #[MapInputName('end')]
         #[WithCastable(CarbonDate::class)]
-        public readonly Carbon                $end,
+        public readonly Carbon $end,
         #[MapInputName('parent_id')]
-        public readonly int                   $parent_id
-    )
-    {
+        public readonly int $parent_id
+    ) {
     }
 
     /**
@@ -63,15 +62,19 @@ final class CreateEventsData extends Data
     {
         $repeatUntil = Carbon::createFromTimestamp($this->recurring_pattern->repeat_until);
         $duration = $this->end->clone()->diffInSeconds($this->start);
+
         return array_map(
-            fn($date) => [
-                'start' => $date,
-                'end' => $date->clone()->addSeconds($duration),
-                'recurring_pattern_id' => $this->recurring_pattern->id,
-                'title' => $this->title,
-                'description' => $this->description,
-                'parent_id' => $this->parent_id,
-            ], DateHelper::mapDatesByPattern($this->recurring_type->recurring_type, $this->start, $repeatUntil)
+            function ($date) use ($duration) {
+                return [
+                    'start' => $date,
+                    'end' => $date->clone()->addSeconds($duration),
+                    'recurring_pattern_id' => $this->recurring_pattern->id,
+                    'title' => $this->title,
+                    'description' => $this->description,
+                    'parent_id' => $this->parent_id,
+                ];
+            },
+            DateHelper::mapDatesByPattern($this->recurring_type->recurring_type, $this->start, $repeatUntil)
         );
     }
 }

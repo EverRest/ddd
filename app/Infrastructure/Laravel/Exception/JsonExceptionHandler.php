@@ -14,6 +14,7 @@ use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 final class JsonExceptionHandler extends ExceptionHandler
 {
@@ -32,10 +33,10 @@ final class JsonExceptionHandler extends ExceptionHandler
      * @param $request
      * @param Exception|Throwable $e
      *
-     * @return Response|JsonResponse|RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @return Response|JsonResponse|RedirectResponse|SymfonyResponse
      * @throws Throwable
      */
-    public function render($request, Exception|Throwable $e): Response|JsonResponse|RedirectResponse|\Symfony\Component\HttpFoundation\Response
+    public function render($request, Exception|Throwable $e): Response|JsonResponse|RedirectResponse|SymfonyResponse
     {
         if ($request->expectsJson() || $request->is('api/*')) {
             return $this->handleApiException($request, $e);

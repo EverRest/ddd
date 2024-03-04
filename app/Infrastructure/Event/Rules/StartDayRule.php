@@ -16,10 +16,9 @@ final class StartDayRule implements Rule
      */
     public function __construct(
         protected readonly EventModel $event,
-        protected string $end= '',
-    )
-    {
-        if(!$this->end) {
+        protected string $end = '',
+    ) {
+        if (!$this->end) {
             $this->end = $this->event->end;
         }
     }

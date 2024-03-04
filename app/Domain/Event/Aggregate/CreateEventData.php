@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain\Event\Aggregate;
@@ -22,7 +23,7 @@ final class CreateEventData extends Data
         #[MapInputName('recurring_pattern_id')]
         public readonly string $recurring_pattern_id,
         #[MapInputName('parent_id')]
-        public int|null        $parent_id,
+        public int|null $parent_id,
         #[MapInputName('title')]
         public readonly string $title,
         #[MapInputName('description')]
@@ -33,7 +34,6 @@ final class CreateEventData extends Data
         #[WithCastable(CarbonDate::class)]
         #[MapInputName('end')]
         public readonly string $end,
-    )
-    {
+    ) {
     }
 }

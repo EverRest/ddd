@@ -55,7 +55,8 @@ class EventObserver
      */
     private function dropModelCache(): void
     {
-        foreach ($this->cachedModels as $cachedModel)
-        Artisan::call("modelCache:clear $cachedModel");
+        foreach ($this->cachedModels as $cachedModel) {
+            Artisan::call("modelCache:clear $cachedModel");
+        }
     }
 }

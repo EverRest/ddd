@@ -4,6 +4,7 @@ namespace App\Infrastructure\Laravel\Provider;
 
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\ServiceProvider;
+
 use function base_path;
 
 class BroadcastServiceProvider extends ServiceProvider

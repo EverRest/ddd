@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain\Event\Aggregate\Transformer;
@@ -9,7 +10,6 @@ use Spatie\LaravelData\Transformers\Transformer;
 
 final class TimeToSecondsTransformer implements Transformer
 {
-
     /**
      * @param DataProperty $property
      * @param mixed $value

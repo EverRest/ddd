@@ -9,7 +9,6 @@ use App\Infrastructure\Event\Trait\HasRemoveEmptyValuesFromArray;
 use App\Infrastructure\Laravel\Model\RecurringTypeModel as RecurringType;
 use Illuminate\Support\Carbon;
 use Spatie\LaravelData\Attributes\MapInputName;
-use Spatie\LaravelData\Attributes\WithCast;
 use Spatie\LaravelData\Attributes\WithCastable;
 use Spatie\LaravelData\Data;
 
@@ -26,17 +25,16 @@ final class UpdateRecurringPatternData extends Data
     public function __construct(
         #[WithCastable(CarbonDate::class)]
         #[MapInputName('start')]
-        public readonly Carbon|null        $start,
+        public readonly Carbon|null $start,
         #[WithCastable(CarbonDate::class)]
         #[MapInputName('end')]
-        public readonly Carbon|null        $end,
+        public readonly Carbon|null $end,
         #[WithCastable(CarbonDate::class)]
         #[MapInputName('repeat_until')]
-        public readonly Carbon|null        $repeat_until,
+        public readonly Carbon|null $repeat_until,
         #[MapInputName('recurring_type')]
-        public readonly RecurringType|null $recurring_type_model,
-    )
-    {
+        public readonly RecurringType|null $recurring_type_model
+    ) {
     }
 
     /**

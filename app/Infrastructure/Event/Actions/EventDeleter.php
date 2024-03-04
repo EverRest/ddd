@@ -39,5 +39,4 @@ class EventDeleter
             throw $e;
         }
     }
-
 }

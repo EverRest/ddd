@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Event\Trait;
 
-trait   EnumHasToArray
+trait EnumHasToArray
 {
     /**
      * @return array
@@ -29,5 +29,4 @@ trait   EnumHasToArray
     {
         return array_combine(self::values(), self::names());
     }
-
 }

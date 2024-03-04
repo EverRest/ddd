@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Laravel\Middleware;
 
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
+
 use function route;
 
 class Authenticate extends Middleware

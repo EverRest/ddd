@@ -14,8 +14,7 @@ class EventIndexer
      */
     public function __construct(
         private readonly IEventRepository $eventRepository,
-    )
-    {
+    ) {
     }
 
     /**

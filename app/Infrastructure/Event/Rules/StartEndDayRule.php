@@ -14,8 +14,7 @@ final class StartEndDayRule implements Rule
      */
     public function __construct(
         protected readonly string $end = '',
-    )
-    {
+    ) {
     }
 
     /**

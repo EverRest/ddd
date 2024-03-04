@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain\Shared;
@@ -13,7 +14,7 @@ class CrudService implements ICrudService
     /**
      * @var mixed $repository
      */
-    protected mixed  $repository;
+    protected mixed $repository;
 
     /**
      * @param array $attributes

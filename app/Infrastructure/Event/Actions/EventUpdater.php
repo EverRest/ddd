@@ -23,10 +23,9 @@ class EventUpdater
     use HasRemoveEmptyValuesFromArray;
 
     public function __construct(
-        private readonly IEventRepository         $eventRepository,
+        private readonly IEventRepository $eventRepository,
         private readonly IRecurringPatternService $recurringPatternService,
-    )
-    {
+    ) {
     }
 
     /**
@@ -39,10 +38,8 @@ class EventUpdater
     public function run(EventModel $model, array $attributes): EventModel
     {
         if ($model->recurringPattern->repeat_until) {
-            /** @var EventModel $model */
             $model = $this->updateRecurringEvent($model, $attributes);
         } else {
-            /** @var EventModel $model */
             $model = $this->updateOrdinaryEvent($model, $attributes);
         }
 
@@ -66,24 +63,17 @@ class EventUpdater
             } else {
                 $parent = $model->parent ?? $model;
                 $oldRecurringPattern = $parent->recurringPattern;
-                $data = [
-                    'title' => Arr::get($attributes, 'title', $parent->title),
-                    'description' => Arr::get($attributes, 'description', $parent->description),
-                    'start' => Arr::get($attributes, 'start', Carbon::createFromTimestamp($parent->start)->format('Y-m-d H:i:s')),
-                    'end' => Arr::get($attributes, 'end', Carbon::createFromTimestamp($parent->end)->format('Y-m-d H:i:s')),
-                    'frequency' => Arr::get($attributes, 'frequency', $parent->recurringPattern->recurringType->recurring_type),
-                    'repeat_until' => Arr::get($attributes, 'repeat_until', Carbon::createFromTimestamp($parent->recurringPattern->repeat_until)->format('Y-m-d H:i:s')),
-                ];
+                $data = $this->prepareRecurringEventData($parent, $attributes);
                 $recurringPatternDto = CreateRecurringPatternData::from(Arr::except($data, ['title', 'description',]));
                 /** @var RecurringPatternModel $recurringPattern */
                 $recurringPattern = $this->recurringPatternService->create($recurringPatternDto->toArray());
-                /** @var EventModel $model */
-                $model = $this->eventRepository->update($model, [...Arr::except($data, ['frequency', 'repeat_until',]), 'parent_id' => null, 'recurring_pattern_id' => $recurringPattern->id,]);
-                $this->recurringPatternService->delete($oldRecurringPattern);
-                if ($parent->id !== $model->id) {
-                    $this->eventRepository->destroy($parent);
-                }
-                $this->saveRecurrenceEvents($model, $recurringPattern, $attributes);
+                $model = $this->updateEventWithNewRecurringPattern(
+                    $model,
+                    $data,
+                    $recurringPattern,
+                    $parent,
+                    $oldRecurringPattern
+                );
             }
 
             DB::commit();
@@ -128,12 +118,95 @@ class EventUpdater
     }
 
     /**
+     * @param EventModel $model
+     * @param array $attributes
+     * @param RecurringPatternModel $recurringPattern
+     * @param EventModel $parent
+     * @param RecurringPatternModel $oldRecurringPattern
+     *
+     * @return EventModel
+     */
+    private function updateEventWithNewRecurringPattern(
+        EventModel $model,
+        array $attributes,
+        RecurringPatternModel $recurringPattern,
+        EventModel $parent,
+        RecurringPatternModel $oldRecurringPattern
+    ): EventModel {
+        /** @var EventModel $model */
+        $model = $this->eventRepository
+            ->update(
+                $model,
+                [
+                    ...Arr::except($attributes, ['frequency', 'repeat_until',]),
+                    'parent_id' => null,
+                    'recurring_pattern_id' => $recurringPattern->id,
+                    ]
+            );
+        $this->recurringPatternService->delete($oldRecurringPattern);
+        if ($parent->id !== $model->id) {
+            $this->eventRepository->destroy($parent);
+        }
+        $this->saveRecurrenceEvents($model, $recurringPattern, $attributes);
+
+        return $model;
+    }
+
+    /**
+     * @param EventModel $parent
+     * @param array $attributes
+     *
+     * @return array
+     */
+    private function prepareRecurringEventData(EventModel $parent, array $attributes): array
+    {
+        $start = Arr::get(
+            $attributes,
+            'start',
+            Carbon::createFromTimestamp($parent->start)
+                ->format('Y-m-d H:i:s')
+        );
+        $end = Arr::get(
+            $attributes,
+            'end',
+            Carbon::createFromTimestamp($parent->end)
+                ->format('Y-m-d H:i:s')
+        );
+        $frequency = Arr::get(
+            $attributes,
+            'frequency',
+            $parent->recurringPattern
+                ->recurringType
+                ->recurring_type
+        );
+        $repeatUntil = Arr::get(
+            $attributes,
+            'repeat_until',
+            Carbon::createFromTimestamp($parent->recurringPattern->repeat_until)
+                ->format('Y-m-d H:i:s')
+        );
+        return [
+            'title' => Arr::get($attributes, 'title', $parent->title),
+            'description' => Arr::get($attributes, 'description', $parent->description),
+            'start' => $start,
+            'end' => $end,
+            'frequency' => $frequency,
+            'repeat_until' => $repeatUntil,
+        ];
+    }
+
+    /**
      * @param EventModel $event
      * @param RecurringPatternModel $recurringPattern
      * @param array $attributes
+     *
+     * @return void
      */
-    private function saveRecurrenceEvents(EventModel $event, RecurringPatternModel $recurringPattern, array $attributes): void
-    {
+    private function saveRecurrenceEvents(
+        EventModel $event,
+        RecurringPatternModel $recurringPattern,
+        array $attributes
+    ): void {
         $eventsData = [
             ...Arr::only($attributes, ['title', 'description', 'end', 'start',]),
             'recurring_pattern' => $recurringPattern,
@@ -146,6 +219,8 @@ class EventUpdater
 
     /**
      * @param array $data
+     *
+     * @return void
      */
     private function saveMany(array $data): void
     {

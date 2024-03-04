@@ -16,9 +16,8 @@ final class EndDayRule implements Rule
     public function __construct(
         protected readonly EventModel $event,
         protected string $start = '',
-    )
-    {
-        if(!$this->start) {
+    ) {
+        if (!$this->start) {
             $this->start = $this->event->start;
         }
     }

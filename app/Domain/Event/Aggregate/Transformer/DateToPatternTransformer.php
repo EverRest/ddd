@@ -18,7 +18,7 @@ final class DateToPatternTransformer implements Transformer
      */
     public function transform(DataProperty $property, mixed $value): mixed
     {
-        if($value) {
+        if ($value) {
             $carbonDate = Carbon::parse($value);
 
             $value = [

@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
+use Illuminate\Http\Response as IlluminateResponse;
 
 class Handler extends ExceptionHandler
 {
@@ -48,7 +49,7 @@ class Handler extends ExceptionHandler
      * @return JsonResponse|RedirectResponse|\Illuminate\Http\Response|Response
      * @throws Throwable
      */
-    public function render($request, Exception|Throwable $e): JsonResponse|RedirectResponse|\Illuminate\Http\Response|Response
+    public function render($request, Exception|Throwable $e): JsonResponse|RedirectResponse|IlluminateResponse|Response
     {
         return (new JsonExceptionHandler($this->container))->render($request, $e);
     }
