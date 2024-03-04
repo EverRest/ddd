@@ -31,12 +31,14 @@ jobs:
       - name: Directory Permissions
         run: chmod -R 777 storage bootstrap/cache
 
-      - name: Run CodeSniffer
-        run: vendor/bin/phpcs
+      - name: Fix issues with CodeSniffer
+        run: ./vendor/bin/phpcbf --standard=PSR12 -s app
+
+      - name: Check for errors with CodeSniffer
+        run: ../vendor/bin/phpcs --standard=PSR12 -s app
 
       - name: Run PHPStan
-        run: vendor/bin/phpstan analyze
-
+        run: ./vendor/bin/phpstan analyse app --memory-limit=-1
 
       - name: Create Database
         run: |
