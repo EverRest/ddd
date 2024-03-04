@@ -78,11 +78,5 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true,
-    "repositories": [
-        {
-            "type": "git",
-            "url": "git@github.com:{username}/{project}.git"
-        }
-    ]
+    "prefer-stable": true
 }
