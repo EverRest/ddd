@@ -51,19 +51,16 @@ jobs:
           DB_DATABASE: database/database.sqlite
         run: vendor/bin/phpunit
 
-#  deploy:
-#    needs: build
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - name: Deploy to Server
-#        uses: easingthemes/ssh-deploy@v2
-#        with:
-#          server: ${{ secrets.DEPLOY_SERVER }}
-#          remote_user: ${{ secrets.DEPLOY_USER }}
-#          remote_path: ${{ secrets.DEPLOY_PATH }}
-#          key: ${{ secrets.DEPLOY_KEY }}
-#          source: '.'
+#runs-on: ubuntu-latest
+#  steps:
+#      - uses: actions/checkout@master
+#        - name: Deploy to staging
+#          env:
+#            VAPOR_API_TOKEN: ${{ secrets.VAPOR_API_TOKEN }}
+#            GITHUB_SECRET: ${{ secrets.GITHUB_SECRET }}
+#          uses: teamnovu/vapor-action@master
+#          with:
+#            args: deploy staging
 
 
 
