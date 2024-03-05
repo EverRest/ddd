@@ -9,7 +9,6 @@ use App\Domain\Event\IEventRepository;
 use App\Domain\Event\IRecurringPatternRepository;
 use App\Domain\Shared\ITask;
 use App\Infrastructure\Event\Trait\HasRemoveEmptyValuesFromArray;
-use App\Infrastructure\Laravel\Model\EventModel;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
@@ -44,7 +43,7 @@ class UpdateRecurringEvent implements ITask
      * @param Model $model
      * @param array $attributes
      *
-     * @return EventModel
+     * @return Model
      * @throws Throwable
      */
     public function run(Model $model, array $attributes): Model
@@ -99,7 +98,7 @@ class UpdateRecurringEvent implements ITask
      * @param Model $parent
      * @param Model $oldRecurringPattern
      *
-     * @return EventModel
+     * @return Model
      * @throws Throwable
      */
     private function updateEventWithNewRecurringPattern(
@@ -109,7 +108,6 @@ class UpdateRecurringEvent implements ITask
         Model $parent,
         Model $oldRecurringPattern
     ): Model {
-        /** @var EventModel $model */
         $model = $this->eventRepository
             ->update(
                 $model,
@@ -130,12 +128,12 @@ class UpdateRecurringEvent implements ITask
     }
 
     /**
-     * @param EventModel $parent
+     * @param Model $parent
      * @param array $attributes
      *
      * @return array
      */
-    private function prepareRecurringEventData(EventModel $parent, array $attributes): array
+    private function prepareRecurringEventData(Model $parent, array $attributes): array
     {
         $start = Arr::get(
             $attributes,

@@ -37,7 +37,7 @@ final class StartDayRule implements Rule
     {
         $startDate = $value ? Carbon::parse($value) :
             Carbon::createFromTimestamp($this->event->start);
-        $endDate = Carbon::parse($this->end);
+        $endDate = Carbon::parse(is_int($this->end) ? (string)$this->end : $this->end);
 
         return $endDate->diffInHours($startDate) <= 24;
     }
