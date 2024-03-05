@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Laravel\Model;
 
-use GeneaLabs\LaravelModelCaching\Traits\Cachable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,13 +13,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class EventModel extends Model
 {
     use HasFactory;
-    use Cachable;
-
-    /**
-     * @var int $cacheCooldownSeconds
-     */
-    protected $cacheCooldownSeconds = 300;
-
     /**
      * @var bool $timestamps
      */

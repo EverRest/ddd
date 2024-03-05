@@ -71,7 +71,7 @@ class Repository implements IRepository
     }
 
     /**
-     * @return EloquentBuilder|CachedBuilder
+     * Get query builder
      */
     public function query()
     {

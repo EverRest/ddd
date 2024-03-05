@@ -1,6 +1,6 @@
 parameters:
     paths:
-    	- app
+     - app
     level: 7
     inferPrivatePropertyTypeFromConstructor: true
     checkMissingIterableValueType: false
@@ -13,6 +13,5 @@ parameters:
         - '#Access to an undefined property (.*)Model::\$.*#'
         #- '#Call to an undefined method (.*)Model::\.*#'
         #- '#Call to an undefined static method (.*)Model::\.*#'
-        - '#Call to an undefined method Illuminate\\(.*)::\.*#'
-        #- '#Call to an undefined static method Illuminate\\(.*)::\.*#'
+        #- '#Call to an undefined static method Illuminate\\\\.*#'
         - '#Unsafe usage of new static(.*)#'

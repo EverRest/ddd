@@ -26,7 +26,7 @@ class RecurringPatternObserver
     /**
      * Handle the RecurringPatternModel "updated" event.
      *
-     * @param RecurringPatternModel $recurringPatternMode
+     * @param RecurringPatternModel $recurringPatternModel
      *
      * @return void
      */

@@ -34,7 +34,7 @@ class EventResource extends JsonResource
             'description' => $this->description,
             'start' => Carbon::createFromTimestamp($this->start)->format('Y-m-d H:i:s'),
             'end' => Carbon::createFromTimestamp($this->end)->format('Y-m-d H:i:s'),
-            'repeat_until' => $this->recurringPattern?->repeat_until ?
+            'repeat_until' => $this->recurringPattern->repeat_until ?
                 Carbon::createFromTimestamp($this->recurringPattern->repeat_until)->format('Y-m-d H:i:s') : null,
             'frequency' => $this->recurringPattern->recurringType?->recurring_type,
         ];
