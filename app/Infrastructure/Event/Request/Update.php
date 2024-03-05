@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Event\Request;
 
 use App\Infrastructure\Event\Rules\EndDayRule;
-use App\Infrastructure\Event\Rules\NoOverlappingRecurringDates;
+use App\Infrastructure\Event\Rules\NoOverlappingRecurringDatesForUpdate;
 use App\Infrastructure\Event\Rules\StartDayRule;
 use App\Infrastructure\Laravel\Model\EventModel;
 use Illuminate\Foundation\Http\FormRequest;
@@ -13,6 +13,8 @@ use Illuminate\Foundation\Http\FormRequest;
 /**
  * @property string $start
  * @property string $end
+ * @property string $repeat_until
+ * @property string $frequency
  */
 final class Update extends FormRequest
 {
@@ -26,8 +28,7 @@ final class Update extends FormRequest
         /**
          * @var EventModel $event
          */
-        $event = request()
-            ->route('event');
+        $event = request()->route('event');
 
         return [
             'title' => ['sometimes', 'min:3', 'max:255', 'string'],
@@ -35,17 +36,36 @@ final class Update extends FormRequest
             'start' => [
                 'sometimes',
                 'date',
-                new NoOverlappingRecurringDates($event->id),
-                new StartDayRule($event, $this->end),
+                'after:now',
+                'before:end',
+                new NoOverlappingRecurringDatesForUpdate(
+                    $event,
+                    $this->start,
+                    $this->end,
+                    $this->repeat_until,
+                    $this->frequency
+                ),
+                new StartDayRule(
+                    $event,
+                    $this->end
+                ),
             ],
             'end' => [
                 'sometimes',
                 'date',
                 'after:start',
-                new EndDayRule($event, $this->start),
+                'after:now',
+                new EndDayRule(
+                    $event,
+                    $this->start
+                ),
             ],
-            'repeat_until' => ['sometimes', 'date', 'after:end'],
-            'frequency' => ['sometimes', 'string', 'in:daily,weekly,monthly,yearly'],
+            'repeat_until' => ['nullable', 'date', 'after:end'],
+            'frequency' => [
+                'nullable',
+                'string',
+                'in:daily,weekly,monthly,yearly'
+            ],
         ];
     }
 }

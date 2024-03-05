@@ -9,7 +9,7 @@ use App\Infrastructure\Event\Task\GetEventPaginatedList;
 use Database\Factories\EventModelFactory;
 use Tests\TestFeature;
 
-class GetPaginatedListTest extends TestFeature
+class GetPaginatedListOfEventsTest extends TestFeature
 {
     /**
      * @var GetEventPaginatedList

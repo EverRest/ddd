@@ -14,4 +14,11 @@ final class RecurringPatternRepository extends Repository implements IRecurringP
      * @var string  $model
      */
     protected string $model = RecurringPatternModel::class;
+
+    /**
+     * @var array  $with
+     */
+    protected array $with = [
+        'recurringType',
+    ];
 }

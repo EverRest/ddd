@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Shared;
 
 use App\Domain\Shared\Enum\ListRequestEnum;
-use GeneaLabs\LaravelModelCaching\CachedBuilder;
+use App\Infrastructure\Event\Filter\StartEndDateFilter;
 use Illuminate\Contracts\Pagination\Paginator;
-use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
@@ -36,6 +35,11 @@ class Repository implements IRepository
      * @var string
      */
     protected string $model;
+
+    /**
+     * @var array
+     */
+    protected array $filters = [];
 
     /**
      * @var array
@@ -267,13 +271,14 @@ class Repository implements IRepository
      */
     protected function applyFilter(mixed $query, array $filter): mixed
     {
-        foreach ($filter as $filterKey => $filterValue) {
+        foreach (Arr::except($filter, $this->filters) as $filterKey => $filterValue) {
             if (is_array($filterValue)) {
                 $query->whereIn($filterKey, $filterValue);
             } else {
                 $query->where($filterKey, $filterValue);
             }
         }
+        (new StartEndDateFilter())->filter($query, $filter);
 
         return $query;
     }

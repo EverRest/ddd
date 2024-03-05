@@ -28,15 +28,9 @@ class UpdateRecurringEvent implements ITask
      */
     private IEventRepository $eventRepository;
 
-    /**
-     * @var IRecurringPatternRepository $recurringPatternRepository
-     */
-    private IRecurringPatternRepository $recurringPatternRepository;
-
     public function __construct()
     {
         $this->eventRepository = App::make(IEventRepository::class);
-        $this->recurringPatternRepository = App::make(IRecurringPatternRepository::class);
     }
 
     /**
@@ -55,9 +49,28 @@ class UpdateRecurringEvent implements ITask
                 $this->updateWithoutRecurringPatternChanges($model, $attributes);
             } else {
                 $parent = $model->parent ?? $model;
-                $oldRecurringPattern = $parent->recurringPattern;
-                $data = $this->prepareRecurringEventData($parent, $attributes);
-                $recurringPattern = ( new CreateRecurrentPattern())
+                $oldRecurringPattern = $model->recurringPattern;
+                $attributes = Arr::set(
+                    $attributes,
+                    'frequency',
+                    Arr::get(
+                        $attributes,
+                        'frequency',
+                        $model->recurringPattern->recurringType->recurring_type,
+                    ),
+                );
+                $repeatUntil = Carbon::parse(Arr::get(
+                    $attributes,
+                    'repeat_until',
+                    $model->recurringPattern->recurringType->repeat_until
+                ))->format(self::DATE_FORMAT);
+                $attributes = Arr::set(
+                    $attributes,
+                    'repeat_until',
+                    $repeatUntil,
+                );
+                $data = $this->prepareRecurringEventData($model, $attributes);
+                $recurringPattern = (new CreateRecurrentPattern())
                     ->run($data);
                 $model = $this->updateEventWithNewRecurringPattern(
                     $model,
@@ -75,6 +88,7 @@ class UpdateRecurringEvent implements ITask
             throw $e;
         }
     }
+
     /**
      * @param Model $model
      * @param array $attributes
@@ -115,13 +129,9 @@ class UpdateRecurringEvent implements ITask
                     ...Arr::except($attributes, ['frequency', 'repeat_until',]),
                     'parent_id' => null,
                     'recurring_pattern_id' => $recurringPattern->id,
-                    ]
+                ]
             );
-        $this->recurringPatternRepository->destroy($oldRecurringPattern);
-        if ($parent->id !== $model->id) {
-            $this->eventRepository->destroy($parent);
-        }
-        (new StoreRecurringEvent($this->eventRepository))
+        (new StoreRecurringEvent())
             ->run($model, $recurringPattern, $attributes,);
 
         return $model;

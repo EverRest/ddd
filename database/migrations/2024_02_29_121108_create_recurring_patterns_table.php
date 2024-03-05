@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -18,6 +17,8 @@ return new class extends Migration
                 ->constrained('recurring_types')
                 ->cascadeOnDelete();
             $table->timestamp('repeat_until')->nullable();
+            $table->smallInteger('separation_count')->default(0);
+            $table->smallInteger('max_num_of_occurrences')->default(1);
             $table->smallInteger('day_of_week')->default(1);
             $table->smallInteger('day_of_month')->default(1);
             $table->smallInteger('week_of_month')->default(1);

@@ -6,10 +6,10 @@ namespace App\Infrastructure\Event\Repository;
 
 use App\Domain\Event\IEventRepository;
 use App\Domain\Shared\Repository;
-use App\Infrastructure\Event\Pipeline\Filter\EventFilterPipeline;
-use App\Infrastructure\Event\Pipeline\Filter\StartEndDateFilter;
+use App\Infrastructure\Event\Filter\StartEndDateFilter;
 use App\Infrastructure\Laravel\Model\EventModel;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 
 final class EventRepository extends Repository implements IEventRepository
 {
@@ -65,29 +65,9 @@ final class EventRepository extends Repository implements IEventRepository
      */
     public function filterEventsWithFromToQuery(mixed $query, string $start, string $end): mixed
     {
-        $from = date($start);
-        $to = date($end);
+        $from = Carbon::parse($start);
+        $to = Carbon::parse($end);
         return $query->whereBetween('start', [$from, $to])
             ->orWhereBetween('end', [$from, $to]);
-    }
-
-    /**
-     * @param mixed $query
-     * @param array $filter
-     *
-     * @return mixed
-     */
-    protected function filter(mixed $query, array $filter): mixed
-    {
-        $filters = [
-            StartEndDateFilter::class => [
-                'start' => Arr::get($filter, 'start'),
-                'end' => Arr::get($filter, 'end'),
-            ],
-        ];
-        $pipeline = new EventFilterPipeline($filters);
-        $query = $pipeline->apply($query);
-
-        return parent::filter($query, Arr::except($filter, ['start', 'end']));
     }
 }

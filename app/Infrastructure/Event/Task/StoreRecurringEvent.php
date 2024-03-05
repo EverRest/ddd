@@ -9,18 +9,11 @@ use App\Domain\Event\IEventRepository;
 use App\Domain\Shared\ITask;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\App;
 
 class StoreRecurringEvent implements ITask
 {
     private const EXCEPT_ATTRIBUTES = ['title', 'description', 'end', 'start',];
-
-    /**
-     * @param IEventRepository $eventRepository
-     */
-    public function __construct(
-        private readonly IEventRepository $eventRepository,
-    ) {
-    }
 
     /**
      * @param Model $event
@@ -38,6 +31,7 @@ class StoreRecurringEvent implements ITask
             'parent_id' => $event->id
         ];
         $createEventsDto = CreateEventsData::from($eventsData);
+
         $this->saveMany($createEventsDto->toArray());
     }
 
@@ -48,8 +42,9 @@ class StoreRecurringEvent implements ITask
      */
     private function saveMany(array $data): void
     {
+        $repository = App::make(IEventRepository::class);
         foreach ($data as $event) {
-            $this->eventRepository->store($event);
+            $repository->store($event);
         }
     }
 }

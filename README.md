@@ -22,7 +22,7 @@
 - its a static code analyzator, please check the documentation of SonarQube
 
 ## Tests
-
-- [Laravel](https://github.com/laravel/laravel)
+- [PHPUnit](https://phpunit.de/index.html) :
 - `./vendor/bin/phpunit` - run phpunit tests
+- [Codeception](https://codeception.com/quickstart) :
 - ` php vendor/bin/codecept run --steps` - run codeception tests
