@@ -34,7 +34,7 @@ final class NoOverlappingRecurringDatesForStore implements Rule
     {
         /** @var CheckIsEventOverlappingForStore $checker */
         $checker = App::make(CheckIsEventOverlappingForStore::class);
-       return $checker->run($this->start, $this->end, $this->repeat_until, $this->frequency);
+        return $checker->run($this->start, $this->end, $this->repeat_until, $this->frequency);
     }
 
     /**
