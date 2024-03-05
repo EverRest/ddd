@@ -67,8 +67,7 @@ class CreateEvent implements ITask
         Model $event,
         Model $recurringPattern,
         array $attributes
-    ): void
-    {
+    ): void {
         $eventsData = [
             ...Arr::only($attributes, ['title', 'description', 'end', 'start',]),
             'recurring_pattern' => $recurringPattern,

@@ -4,5 +4,4 @@ namespace App\Domain\Shared;
 
 interface IAction
 {
-
 }

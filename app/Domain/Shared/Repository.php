@@ -235,12 +235,12 @@ class Repository implements IRepository
         $query = $this->query();
         if ($search) {
             $query->where(
-                    function ($query) use ($searchableAttributes, $search) {
-                        foreach ($searchableAttributes as $searchableAttribute) {
-                            $query->orWhere($searchableAttribute, 'LIKE', "%$search%");
-                        }
+                function ($query) use ($searchableAttributes, $search) {
+                    foreach ($searchableAttributes as $searchableAttribute) {
+                        $query->orWhere($searchableAttribute, 'LIKE', "%$search%");
                     }
-                );
+                }
+            );
         }
 
         return $query;

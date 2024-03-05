@@ -45,11 +45,17 @@ jobs:
           mkdir -p database
           touch database/database.sqlite
 
-      - name: Execute tests (Unit and Feature tests) via PHPUnit
+      - name: Execute tests (Unit and Feature tests)  PHPUnit
         env:
           DB_CONNECTION: sqlite
           DB_DATABASE: database/database.sqlite
         run: vendor/bin/phpunit
+
+      - name: Execute BDD tests Codeception
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+        run: php vendor/bin/codecept run --steps
 
 #runs-on: ubuntu-latest
 #  steps:

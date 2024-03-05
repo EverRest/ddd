@@ -17,8 +17,7 @@ final class StartDayRule implements Rule
     public function __construct(
         protected readonly EventModel $event,
         protected string|null|int $end,
-    )
-    {
+    ) {
         if (!is_string($this->end) && !is_null($this->end)) {
             throw new \InvalidArgumentException('Invalid type for $end property. Should be string or null.');
         }

@@ -25,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(IEventRepository::class, EventRepository::class);
         $this->app->singleton(IRecurringPatternRepository::class, RecurringPatternRepository::class);
         $this->app->singleton(IRecurringTypeRepository::class, RecurringTypeRepository::class);
- }
+    }
 
     /**
      * Bootstrap any application services.

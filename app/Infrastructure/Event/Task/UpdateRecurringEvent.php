@@ -22,7 +22,7 @@ class UpdateRecurringEvent implements ITask
 {
     use HasRemoveEmptyValuesFromArray;
 
-    private  const DATE_FORMAT = 'Y-m-d H:i:s';
+    private const DATE_FORMAT = 'Y-m-d H:i:s';
 
     /**
      * @var IEventRepository $eventRepository

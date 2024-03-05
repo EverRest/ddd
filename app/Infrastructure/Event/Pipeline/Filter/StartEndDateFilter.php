@@ -41,6 +41,6 @@ class StartEndDateFilter
     public function when(mixed $query, Closure $callback): mixed
     {
         $request = request();
-        return $request->has('end')&&$request->has('start') ? $callback($query) : $query;
+        return $request->has('end') && $request->has('start') ? $callback($query) : $query;
     }
 }

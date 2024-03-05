@@ -11,7 +11,7 @@ use App\Infrastructure\Event\Trait\HasRemoveEmptyValuesFromArray;
 use Illuminate\Database\Eloquent\Model;
 use Throwable;
 
-class   EventUpdater implements IAction
+class EventUpdater implements IAction
 {
     use HasRemoveEmptyValuesFromArray;
 

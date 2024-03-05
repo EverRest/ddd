@@ -34,8 +34,7 @@ class EventController extends Controller
         private readonly EventCreator $eventCreator,
         private readonly EventUpdater $eventUpdater,
         private readonly EventDestroyer $eventDestroyer,
-    )
-    {
+    ) {
         parent::__construct($dispatcher);
     }
 

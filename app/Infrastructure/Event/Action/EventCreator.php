@@ -20,6 +20,6 @@ class EventCreator implements IAction
      */
     public function run(array $attributes): Model
     {
-       return (new CreateEvent())->run($attributes);
+        return (new CreateEvent())->run($attributes);
     }
 }

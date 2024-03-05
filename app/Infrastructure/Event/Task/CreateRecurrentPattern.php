@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\App;
 
 class CreateRecurrentPattern implements ITask
 {
-    private  const EXCEPT_ATTRIBUTES = ['title', 'description',];
+    private const EXCEPT_ATTRIBUTES = ['title', 'description',];
 
     private IRecurringPatternRepository $recurringPatternRepository;
 
@@ -35,5 +35,4 @@ class CreateRecurrentPattern implements ITask
         return $this->recurringPatternRepository
             ->store($recurringPatternDto->toArray());
     }
-
 }
