@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class EventModel extends Model
 {
     use HasFactory;
+
     /**
      * @var bool $timestamps
      */
