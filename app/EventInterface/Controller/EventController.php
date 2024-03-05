@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace App\EventInterface\Controller;
 
 use App\Domain\Event\Aggregate\EventResource;
+use App\Infrastructure\Event\Action\EventCreator;
+use App\Infrastructure\Event\Action\EventDestroyer;
+use App\Infrastructure\Event\Action\EventIndexer;
+use App\Infrastructure\Event\Action\EventUpdater;
 use App\Infrastructure\Event\Request\Index;
 use App\Infrastructure\Event\Request\Store;
 use App\Infrastructure\Event\Request\Update;
-use App\Infrastructure\Event\Service\Domain\EventService;
 use App\Infrastructure\Laravel\Controller;
 use App\Infrastructure\Laravel\Model\EventModel;
 use Exception;
@@ -20,9 +23,18 @@ class EventController extends Controller
 {
     /**
      * @param Dispatcher $dispatcher
-     * @param EventService $eventService
+     * @param EventIndexer $eventIndexer
+     * @param EventCreator $eventCreator
+     * @param EventUpdater $eventUpdater
+     * @param EventDestroyer $eventDestroyer
      */
-    public function __construct(Dispatcher $dispatcher, private readonly EventService $eventService,)
+    public function __construct(
+        Dispatcher $dispatcher,
+        private readonly EventIndexer $eventIndexer,
+        private readonly EventCreator $eventCreator,
+        private readonly EventUpdater $eventUpdater,
+        private readonly EventDestroyer $eventDestroyer,
+    )
     {
         parent::__construct($dispatcher);
     }
@@ -33,11 +45,12 @@ class EventController extends Controller
      * @param Index $request
      *
      * @return JsonResponse
+     * @throws Throwable
      */
     public function index(Index $request): JsonResponse
     {
         $attributes = $request->validated();
-        $list = $this->eventService->index($attributes);
+        $list = $this->eventIndexer->run($attributes);
 
         return EventResource::collection($list)->response();
     }
@@ -48,12 +61,12 @@ class EventController extends Controller
      * @param Store $request
      *
      * @return JsonResponse
-     * @throws Exception
+     * @throws Exception|Throwable
      */
     public function store(Store $request): JsonResponse
     {
         $attributes = $request->validated();
-        $model = $this->eventService->create($attributes);
+        $model = $this->eventCreator->run($attributes);
 
         return (new EventResource($model))->response();
     }
@@ -70,7 +83,7 @@ class EventController extends Controller
     public function update(Update $request, EventModel $event): JsonResponse
     {
         $attributes = $request->validated();
-        $event = $this->eventService->update($event, $attributes);
+        $event = $this->eventUpdater->run($event, $attributes);
 
         return (new EventResource($event->refresh()))->response();
     }
@@ -97,7 +110,7 @@ class EventController extends Controller
      */
     public function destroy(EventModel $event): JsonResponse
     {
-        $event = $this->eventService->delete($event);
+        $event = $this->eventDestroyer->run($event);
 
         return (new EventResource($event))->response();
     }

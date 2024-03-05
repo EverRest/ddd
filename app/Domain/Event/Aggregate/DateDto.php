@@ -25,7 +25,6 @@ final class DateDto extends Data
 {
     /**
      * @param Carbon|string $start
-     * @param array|string $date_pattern
      * @param Carbon|string $end
      * @param int|null|string $start_time
      * @param int|null|string $end_time
@@ -35,8 +34,6 @@ final class DateDto extends Data
         #[MapInputName('start')]
         #[WithCastable(CarbonDate::class)]
         public readonly Carbon|string $start,
-        #[MapInputName('date_pattern')]
-        public readonly array|string $date_pattern,
         #[MapInputName('end')]
         #[WithCastable(CarbonDate::class)]
         public readonly Carbon|string $end,

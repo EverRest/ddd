@@ -1,0 +1,141 @@
+{
+	"info": {
+		"_postman_id": "e412bbf2-a135-4206-ab2d-200d8bf31f1e",
+		"name": "Test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "259734",
+		"_collection_link": "https://grey-rocket-8687.postman.co/workspace/PLUMX~61f085b2-420b-4019-bd45-dcc57228fcb1/collection/259734-e412bbf2-a135-4206-ab2d-200d8bf31f1e?action=share&source=collection_link&creator=259734"
+	},
+	"item": [
+		{
+			"name": "List",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:81/api/events?start=2024-03-02&end=2025-03-02&search=Monthly",
+					"host": [
+						"localhost"
+					],
+					"port": "81",
+					"path": [
+						"api",
+						"events"
+					],
+					"query": [
+						{
+							"key": "start",
+							"value": "2024-03-02"
+						},
+						{
+							"key": "end",
+							"value": "2025-03-02"
+						},
+						{
+							"key": "search",
+							"value": "Monthly"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/api/events/4",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"events",
+						"4"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Show",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/api/events/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"events",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Monthly Sample Event 1\",\n    \"description\": \"Monthly description of the event 1\",\n    \"start\": \"2024-03-07 16:00:00\",\n    \"end\": \"2024-03-07 17:00:00\",\n    \"repeat_until\": \"2028-03-17\",\n    \"frequency\": \"monthly\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/events",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"events"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Title 2\",\n    \"description\": \"Description of the event4\",\n    \"start\": \"2024-03-01 11:00:00\",\n    \"frequency\": \"yearly\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/events/865",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"events",
+						"865"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

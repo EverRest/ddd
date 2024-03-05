@@ -4,17 +4,20 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Domain\Event\Enum\RecurringTypeEnum;
-use App\Domain\Event\IRecurringTypeService;
-use App\Infrastructure\Event\Service\Domain\RecurringTypeService;
+use App\Infrastructure\Event\Task\CreateRecurringTypeByCode;
+use App\Infrastructure\Event\Task\GetRecurringTypeByCode;
 use Illuminate\Database\Seeder;
 
 class RecurringTypeSeeder extends Seeder
 {
     /**
-     * @param IRecurringTypeService $recurringTypeService
+     * @param GetRecurringTypeByCode $getRecurringTypeByCode
+     * @param CreateRecurringTypeByCode $createRecurringTypeByCode
      */
-    public function __construct(private readonly IRecurringTypeService $recurringTypeService)
-    {
+    public function __construct(
+        private readonly  GetRecurringTypeByCode $getRecurringTypeByCode,
+        private readonly CreateRecurringTypeByCode $createRecurringTypeByCode,
+    ) {
     }
 
     /**
@@ -24,10 +27,10 @@ class RecurringTypeSeeder extends Seeder
     {
         $patterns = RecurringTypeEnum::values();
         foreach ($patterns as $pattern) {
-            if ($this->recurringTypeService->getRecurringTypeByCode($pattern)) {
+            if ($this->getRecurringTypeByCode->run($pattern)) {
                 continue;
             }
-            $this->recurringTypeService->create(['recurring_type' => $pattern,]);
+            $this->createRecurringTypeByCode->run($pattern);
         }
     }
 }

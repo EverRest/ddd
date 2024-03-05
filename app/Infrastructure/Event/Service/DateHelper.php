@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Event\Service\Util;
+namespace App\Infrastructure\Event\Service;
 
 use App\Domain\Event\Enum\RecurringTypeEnum;
 use Illuminate\Support\Carbon;

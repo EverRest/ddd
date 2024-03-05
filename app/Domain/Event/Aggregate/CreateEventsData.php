@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Event\Aggregate;
 
 use App\Domain\Event\Aggregate\Cast\CarbonDate;
-use App\Domain\Event\Enum\RecurringTypeEnum;
-use App\Infrastructure\Event\Service\Util\DateHelper;
+use App\Infrastructure\Event\Service\DateHelper;
 use App\Infrastructure\Laravel\Model\RecurringPatternModel;
 use App\Infrastructure\Laravel\Model\RecurringTypeModel;
 use Illuminate\Support\Carbon;

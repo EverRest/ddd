@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Infrastructure\Event\Rules;
 
 use App\Domain\Event\IEventService;
+use App\Infrastructure\Event\Action\OverlappingChecker;
+use App\Infrastructure\Event\Task\CheckIsEventOverlapping;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\App;
 
@@ -30,10 +32,9 @@ final class NoOverlappingRecurringDates implements Rule
      */
     public function passes($attribute, $value): bool
     {
-        /** @var IEventService $service */
-        $service = App::make(IEventService::class);
+        $checker = App::make(CheckIsEventOverlapping::class);
 
-        return $service->checkOverlapping($value, $this->end, $this->repeat_until);
+        return $checker->run($value, $this->end, $this->repeat_until);
     }
 
     /**

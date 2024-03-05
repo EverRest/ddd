@@ -30,7 +30,7 @@ final class Store extends FormRequest
     {
         return [
             'title' => ['required', 'min:3', 'max:255', 'string'],
-            'description' => ['required', 'min:3', 'max:255', 'string'],
+            'description' => ['nullable', 'min:3', 'string'],
             'start' => [
                 'required',
                 'date:Y-m-d H:i:s',

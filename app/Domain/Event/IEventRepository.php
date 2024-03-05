@@ -3,7 +3,6 @@
 namespace App\Domain\Event;
 
 use App\Domain\Shared\IRepository;
-use Illuminate\Database\Query\Builder;
 
 interface IEventRepository extends IRepository
 {
@@ -15,11 +14,11 @@ interface IEventRepository extends IRepository
     public function checkOverlapping(array $data): bool;
 
     /**
-     * @param Builder $query
+     * @param mixed $query
      * @param string $start
      * @param string $end
      *
-     * @return Builder
+     * @return mixed
      */
-    public function filterEventsWithFromToQuery(Builder $query, string $start, string $end): Builder;
+    public function filterEventsWithFromToQuery(mixed $query, string $start, string $end): mixed;
 }

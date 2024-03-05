@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Event\Aggregate;
 
 use App\Domain\Event\Aggregate\Cast\CarbonDate;
-use App\Domain\Event\IRecurringTypeService;
-use App\Infrastructure\Event\Service\Domain\RecurringTypeService;
+use App\Infrastructure\Event\Task\GetRecurringTypeByCode;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
 use Spatie\LaravelData\Attributes\MapInputName;
@@ -57,8 +56,8 @@ final class CreateRecurringPatternData extends Data
     private function getRecurringTypeId(): ?int
     {
         if ($this->frequency) {
-            $recurringTypeService = App::make(IRecurringTypeService::class);
-            $recurringType = $recurringTypeService->getRecurringTypeByCode($this->frequency);
+            $task = App::make(GetRecurringTypeByCode::class);
+            $recurringType = $task->run($this->frequency);
             return $recurringType->id;
         }
 

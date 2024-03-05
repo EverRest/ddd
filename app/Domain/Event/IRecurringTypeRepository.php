@@ -12,5 +12,5 @@ interface IRecurringTypeRepository extends IRepository
      *
      * @return Model|null
      */
-    public function getRecurringTypeByCode(string $code): ?Model;
+    public function getByCode(string $code): ?Model;
 }

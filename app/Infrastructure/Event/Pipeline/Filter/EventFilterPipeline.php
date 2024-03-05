@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Event\Pipeline\Filter;
 
-use Illuminate\Database\Query\Builder;
 use League\Pipeline\Pipeline;
 
 class EventFilterPipeline
@@ -27,16 +26,16 @@ class EventFilterPipeline
     }
 
     /**
-     * @param Builder $query
+     * @param mixed $query
      *
-     * @return Builder
+     * @return mixed
      */
-    public function apply(Builder $query): Builder
+    public function apply(mixed $query): mixed
     {
         $pipeline = new Pipeline();
-        foreach ($this->filters as $filterClass) {
+        foreach ($this->filters as $filterClass => $value) {
             $pipeline = $pipeline->pipe(
-                fn($payload) => new $filterClass($payload[0], $payload[1])
+                fn($payload) => new $filterClass()
             );
         }
 

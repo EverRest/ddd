@@ -12,12 +12,17 @@ final class StartDayRule implements Rule
 {
     /**
      * @param EventModel $event
-     * @param string $end
+     * @param string|null|int $end
      */
     public function __construct(
         protected readonly EventModel $event,
-        protected string $end = '',
-    ) {
+        protected string|null|int $end,
+    )
+    {
+        if (!is_string($this->end) && !is_null($this->end)) {
+            throw new \InvalidArgumentException('Invalid type for $end property. Should be string or null.');
+        }
+
         if (!$this->end) {
             $this->end = $this->event->end;
         }
@@ -31,10 +36,11 @@ final class StartDayRule implements Rule
      */
     public function passes($attribute, $value): bool
     {
-        $startDate = Carbon::parse($value);
+        $startDate = $value ? Carbon::parse($value) :
+            Carbon::createFromTimestamp($this->event->start);
         $endDate = Carbon::parse($this->end);
 
-        return $endDate->diffInHours($endDate) <= 24;
+        return $endDate->diffInHours($startDate) <= 24;
     }
 
     /**
@@ -42,6 +48,6 @@ final class StartDayRule implements Rule
      */
     public function message(): string
     {
-        return 'The event can not be longer then 24 hours. You can create a recurring event instead.';
+        return 'The event cannot be longer than 24 hours. You can create a recurring event instead.';
     }
 }

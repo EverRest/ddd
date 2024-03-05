@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Shared;
 
 use Illuminate\Contracts\Pagination\Paginator;
-use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 use Throwable;
 
@@ -32,9 +30,9 @@ interface IRepository
     public function getPaginatedList(array $data = []): Paginator;
 
     /**
-     * @return Builder
+     * @return mixed
      */
-    public function query(): Builder;
+    public function query();
 
     /**
      * @return int

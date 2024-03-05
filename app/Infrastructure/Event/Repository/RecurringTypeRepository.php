@@ -21,7 +21,7 @@ final class RecurringTypeRepository extends Repository implements IRecurringType
      *
      * @return Model|null
      */
-    public function getRecurringTypeByCode(string $code): ?Model
+    public function getByCode(string $code): ?Model
     {
         /** @var Model|null $model */
         $model = $this->query()

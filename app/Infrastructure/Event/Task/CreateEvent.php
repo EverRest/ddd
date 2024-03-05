@@ -2,52 +2,50 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Event\Actions;
+namespace App\Infrastructure\Event\Task;
 
 use App\Domain\Event\Aggregate\CreateEventsData;
-use App\Domain\Event\Aggregate\CreateRecurringPatternData;
 use App\Domain\Event\IEventRepository;
-use App\Domain\Event\IRecurringPatternService;
-use App\Infrastructure\Laravel\Model\EventModel;
-use App\Infrastructure\Laravel\Model\RecurringPatternModel;
+use App\Domain\Shared\ITask;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-class EventCreator
+class CreateEvent implements ITask
 {
     /**
-     * @param IRecurringPatternService $recurringPatternService
-     * @param IEventRepository $eventRepository
+     * @var IEventRepository $eventRepository
      */
-    public function __construct(
-        private readonly IRecurringPatternService $recurringPatternService,
-        private readonly IEventRepository $eventRepository,
-    ) {
+    private IEventRepository $eventRepository;
+
+    /**
+     * CreateEvent constructor.
+     */
+    public function __construct()
+    {
+        $this->eventRepository = App::make(IEventRepository::class);
     }
+
     /**
      * @param array $attributes
      *
-     * @return EventModel
+     * @return Model
      * @throws Exception|Throwable
      */
-    public function run(array $attributes): EventModel
+    public function run(array $attributes): Model
     {
         DB::beginTransaction();
         try {
-            $recurringPatternDto = CreateRecurringPatternData::from(
-                Arr::except($attributes, ['title', 'description',])
-            );
-            /** @var RecurringPatternModel $recurringPattern */
-            $recurringPattern = $this->recurringPatternService->create($recurringPatternDto->toArray());
-            /** @var EventModel $event */
+            $recurringPattern = (new CreateRecurrentPattern())->run($attributes);
             $event = $this->eventRepository
                 ->firstOrCreate([
                     ...Arr::except($attributes, ['repeat_until', 'frequency',]),
                     'parent_id' => null,
                     'recurring_pattern_id' => $recurringPattern->id,
-                    ]);
+                ]);
             if ($recurringPattern->repeat_until) {
                 $this->saveRecurrenceEvents($event, $recurringPattern, $attributes);
             }
@@ -61,15 +59,16 @@ class EventCreator
     }
 
     /**
-     * @param EventModel $event
-     * @param RecurringPatternModel $recurringPattern
+     * @param Model $event
+     * @param Model $recurringPattern
      * @param array $attributes
      */
     private function saveRecurrenceEvents(
-        EventModel $event,
-        RecurringPatternModel $recurringPattern,
+        Model $event,
+        Model $recurringPattern,
         array $attributes
-    ): void {
+    ): void
+    {
         $eventsData = [
             ...Arr::only($attributes, ['title', 'description', 'end', 'start',]),
             'recurring_pattern' => $recurringPattern,

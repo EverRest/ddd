@@ -2,59 +2,52 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Event\Actions;
+namespace App\Infrastructure\Event\Task;
 
-use App\Domain\Event\Aggregate\CreateEventsData;
-use App\Domain\Event\Aggregate\CreateRecurringPatternData;
 use App\Domain\Event\Aggregate\UpdateEventData;
 use App\Domain\Event\IEventRepository;
-use App\Domain\Event\IRecurringPatternService;
+use App\Domain\Event\IRecurringPatternRepository;
+use App\Domain\Shared\ITask;
 use App\Infrastructure\Event\Trait\HasRemoveEmptyValuesFromArray;
 use App\Infrastructure\Laravel\Model\EventModel;
-use App\Infrastructure\Laravel\Model\RecurringPatternModel;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-class EventUpdater
+class UpdateRecurringEvent implements ITask
 {
     use HasRemoveEmptyValuesFromArray;
 
-    public function __construct(
-        private readonly IEventRepository $eventRepository,
-        private readonly IRecurringPatternService $recurringPatternService,
-    ) {
-    }
+    private  const DATE_FORMAT = 'Y-m-d H:i:s';
 
     /**
-     * @param EventModel $model
-     * @param array $attributes
-     *
-     * @return EventModel
-     * @throws Throwable
+     * @var IEventRepository $eventRepository
      */
-    public function run(Model $model, array $attributes): EventModel
+    private IEventRepository $eventRepository;
+
+    /**
+     * @var IRecurringPatternRepository $recurringPatternRepository
+     */
+    private IRecurringPatternRepository $recurringPatternRepository;
+
+    public function __construct()
     {
-        if ($model->recurringPattern->repeat_until) {
-            $model = $this->updateRecurringEvent($model, $attributes);
-        } else {
-            $model = $this->updateOrdinaryEvent($model, $attributes);
-        }
-
-        return $model->refresh();
+        $this->eventRepository = App::make(IEventRepository::class);
+        $this->recurringPatternRepository = App::make(IRecurringPatternRepository::class);
     }
 
     /**
-     * @param EventModel $model
+     * @param Model $model
      * @param array $attributes
      *
      * @return EventModel
      * @throws Throwable
      */
-    private function updateRecurringEvent(EventModel $model, array $attributes): EventModel
+    public function run(Model $model, array $attributes): Model
     {
         DB::beginTransaction();
         try {
@@ -65,9 +58,8 @@ class EventUpdater
                 $parent = $model->parent ?? $model;
                 $oldRecurringPattern = $parent->recurringPattern;
                 $data = $this->prepareRecurringEventData($parent, $attributes);
-                $recurringPatternDto = CreateRecurringPatternData::from(Arr::except($data, ['title', 'description',]));
-                /** @var RecurringPatternModel $recurringPattern */
-                $recurringPattern = $this->recurringPatternService->create($recurringPatternDto->toArray());
+                $recurringPattern = ( new CreateRecurrentPattern())
+                    ->run($data);
                 $model = $this->updateEventWithNewRecurringPattern(
                     $model,
                     $data,
@@ -76,7 +68,6 @@ class EventUpdater
                     $oldRecurringPattern
                 );
             }
-
             DB::commit();
 
             return $model;
@@ -85,31 +76,14 @@ class EventUpdater
             throw $e;
         }
     }
-
     /**
-     * @param EventModel $model
+     * @param Model $model
      * @param array $attributes
      *
-     * @return EventModel
+     * @return Model
      * @throws Throwable
      */
-    private function updateOrdinaryEvent(EventModel $model, array $attributes): EventModel
-    {
-        $updateEventData = UpdateEventData::from($attributes);
-        $data = $this->removeEmptyValues($updateEventData->toArray());
-        $this->eventRepository->update($model, $data);
-
-        return $model->refresh();
-    }
-
-    /**
-     * @param EventModel $model
-     * @param array $attributes
-     *
-     * @return EventModel
-     * @throws Throwable
-     */
-    private function updateWithoutRecurringPatternChanges(EventModel $model, array $attributes): EventModel
+    private function updateWithoutRecurringPatternChanges(Model $model, array $attributes): Model
     {
         $updateEventData = UpdateEventData::from($attributes);
         $data = $this->removeEmptyValues($updateEventData->toArray());
@@ -119,21 +93,22 @@ class EventUpdater
     }
 
     /**
-     * @param EventModel $model
+     * @param Model $model
      * @param array $attributes
-     * @param RecurringPatternModel $recurringPattern
-     * @param EventModel $parent
-     * @param RecurringPatternModel $oldRecurringPattern
+     * @param Model $recurringPattern
+     * @param Model $parent
+     * @param Model $oldRecurringPattern
      *
      * @return EventModel
+     * @throws Throwable
      */
     private function updateEventWithNewRecurringPattern(
-        EventModel $model,
+        Model $model,
         array $attributes,
-        RecurringPatternModel $recurringPattern,
-        EventModel $parent,
-        RecurringPatternModel $oldRecurringPattern
-    ): EventModel {
+        Model $recurringPattern,
+        Model $parent,
+        Model $oldRecurringPattern
+    ): Model {
         /** @var EventModel $model */
         $model = $this->eventRepository
             ->update(
@@ -144,11 +119,12 @@ class EventUpdater
                     'recurring_pattern_id' => $recurringPattern->id,
                     ]
             );
-        $this->recurringPatternService->delete($oldRecurringPattern);
+        $this->recurringPatternRepository->destroy($oldRecurringPattern);
         if ($parent->id !== $model->id) {
             $this->eventRepository->destroy($parent);
         }
-        $this->saveRecurrenceEvents($model, $recurringPattern, $attributes);
+        (new StoreRecurringEvent($this->eventRepository))
+            ->run($model, $recurringPattern, $attributes,);
 
         return $model;
     }
@@ -165,13 +141,13 @@ class EventUpdater
             $attributes,
             'start',
             Carbon::createFromTimestamp($parent->start)
-                ->format('Y-m-d H:i:s')
+                ->format(self::DATE_FORMAT)
         );
         $end = Arr::get(
             $attributes,
             'end',
             Carbon::createFromTimestamp($parent->end)
-                ->format('Y-m-d H:i:s')
+                ->format(self::DATE_FORMAT)
         );
         $frequency = Arr::get(
             $attributes,
@@ -184,7 +160,7 @@ class EventUpdater
             $attributes,
             'repeat_until',
             Carbon::createFromTimestamp($parent->recurringPattern->repeat_until)
-                ->format('Y-m-d H:i:s')
+                ->format(self::DATE_FORMAT)
         );
         return [
             'title' => Arr::get($attributes, 'title', $parent->title),
@@ -194,39 +170,5 @@ class EventUpdater
             'frequency' => $frequency,
             'repeat_until' => $repeatUntil,
         ];
-    }
-
-    /**
-     * @param EventModel $event
-     * @param RecurringPatternModel $recurringPattern
-     * @param array $attributes
-     *
-     * @return void
-     */
-    private function saveRecurrenceEvents(
-        EventModel $event,
-        RecurringPatternModel $recurringPattern,
-        array $attributes
-    ): void {
-        $eventsData = [
-            ...Arr::only($attributes, ['title', 'description', 'end', 'start',]),
-            'recurring_pattern' => $recurringPattern,
-            'recurring_type' => $recurringPattern->recurringType,
-            'parent_id' => $event->id
-        ];
-        $createEventsDto = CreateEventsData::from($eventsData);
-        $this->saveMany($createEventsDto->toArray());
-    }
-
-    /**
-     * @param array $data
-     *
-     * @return void
-     */
-    private function saveMany(array $data): void
-    {
-        foreach ($data as $event) {
-            $this->eventRepository->store($event);
-        }
     }
 }

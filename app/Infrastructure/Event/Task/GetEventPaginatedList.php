@@ -1,13 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
-namespace App\Infrastructure\Event\Actions;
+namespace App\Infrastructure\Event\Task;
 
 use App\Domain\Event\IEventRepository;
+use App\Domain\Shared\ITask;
 use Illuminate\Contracts\Pagination\Paginator;
 
-class EventIndexer
+class GetEventPaginatedList implements ITask
 {
     /**
      * @param IEventRepository $eventRepository

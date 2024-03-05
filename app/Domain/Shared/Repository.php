@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace App\Domain\Shared;
 
 use App\Domain\Shared\Enum\ListRequestEnum;
+use GeneaLabs\LaravelModelCaching\CachedBuilder;
 use Illuminate\Contracts\Pagination\Paginator;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as IlluminateCollection;
 use Illuminate\Support\Facades\App;
 use Throwable;
@@ -72,9 +71,9 @@ class Repository implements IRepository
     }
 
     /**
-     * @return Builder
+     * @return EloquentBuilder|CachedBuilder
      */
-    public function query(): Builder
+    public function query()
     {
         /**
          * @var Model $model
@@ -199,9 +198,9 @@ class Repository implements IRepository
     /**
      * @param array $data
      *
-     * @return Builder
+     * @return mixed
      */
-    protected function listQuery(array $data): Builder
+    protected function listQuery(array $data): mixed
     {
         $query = $this->search($data);
         $query = $this->with($query,);
@@ -226,18 +225,17 @@ class Repository implements IRepository
     /**
      * @param array $data
      *
-     * @return Builder
+     * @return mixed
      */
-    protected function search(array $data): Builder
+    protected function search(array $data): mixed
     {
         $model = $this->model();
         $searchableAttributes = $model->getFillable();
         $search = Arr::get($data, ListRequestEnum::searchKey->value, '');
         $query = $this->query();
         if ($search) {
-            $query
-                ->where(
-                    function (Builder $query) use ($searchableAttributes, $search) {
+            $query->where(
+                    function ($query) use ($searchableAttributes, $search) {
                         foreach ($searchableAttributes as $searchableAttribute) {
                             $query->orWhere($searchableAttribute, 'LIKE', "%$search%");
                         }
@@ -249,12 +247,12 @@ class Repository implements IRepository
     }
 
     /**
-     * @param Builder $query
+     * @param mixed $query
      * @param array $filter
      *
-     * @return Builder
+     * @return mixed
      */
-    protected function filter(Builder $query, array $filter): Builder
+    protected function filter(mixed $query, array $filter): mixed
     {
         $query->when($filter, fn($query) => $this->applyFilter($query, $filter));
 
@@ -262,12 +260,12 @@ class Repository implements IRepository
     }
 
     /**
-     * @param Builder $query
+     * @param mixed $query
      * @param array $filter
      *
      * @return mixed
      */
-    protected function applyFilter(Builder $query, array $filter): mixed
+    protected function applyFilter(mixed $query, array $filter): mixed
     {
         foreach ($filter as $filterKey => $filterValue) {
             if (is_array($filterValue)) {
@@ -281,12 +279,12 @@ class Repository implements IRepository
     }
 
     /**
-     * @param Builder $query
+     * @param mixed $query
      * @param array $data
      *
      * @return Paginator
      */
-    protected function paginate(Builder $query, array $data): Paginator
+    protected function paginate(mixed $query, array $data): Paginator
     {
         $limit = Arr::get($data, ListRequestEnum::limitKey->value) ?: $this->default_limit;
 
@@ -294,12 +292,12 @@ class Repository implements IRepository
     }
 
     /**
-     * @param Builder $query
+     * @param mixed $query
      * @param array $data
      *
-     * @return Builder
+     * @return mixed
      */
-    protected function sort(Builder $query, array $data): Builder
+    protected function sort(mixed $query, array $data): mixed
     {
         $sort = $this->getSortColumn($data);
         $order = $this->getDirectionColumn($data);
@@ -332,11 +330,11 @@ class Repository implements IRepository
     }
 
     /**
-     * @param Builder $query
+     * @param mixed $query
      *
-     * @return Builder
+     * @return mixed
      */
-    protected function with(Builder $query,): Builder
+    protected function with(mixed $query,): mixed
     {
         if (!empty($this->with)) {
             $query->with($this->with);

@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Laravel\Provider;
 
-use App\Events\UpdatingEvent;
-use App\Infrastructure\Event\Listeners\EventChangingRecurringPattern;
-use App\Listeners\EventChangingDescription;
+use App\Infrastructure\Event\Observers\EventObserver;
+use App\Infrastructure\Event\Observers\RecurringPatternObserver;
+use App\Infrastructure\Laravel\Model\EventModel;
+use App\Infrastructure\Laravel\Model\RecurringPatternModel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -22,10 +23,6 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
-        UpdatingEvent::class => [
-            EventChangingDescription::class,
-            EventChangingRecurringPattern::class,
-        ]
     ];
 
     /**
@@ -33,9 +30,10 @@ class EventServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
-        //
+        EventModel::observe(EventObserver::class);
+        RecurringPatternModel::observe(RecurringPatternObserver::class);
     }
 
     /**
@@ -43,7 +41,7 @@ class EventServiceProvider extends ServiceProvider
      *
      * @return bool
      */
-    public function shouldDiscoverEvents()
+    public function shouldDiscoverEvents(): bool
     {
         return false;
     }

@@ -9,7 +9,6 @@ use App\Domain\Shared\Repository;
 use App\Infrastructure\Event\Pipeline\Filter\EventFilterPipeline;
 use App\Infrastructure\Event\Pipeline\Filter\StartEndDateFilter;
 use App\Infrastructure\Laravel\Model\EventModel;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Arr;
 
 final class EventRepository extends Repository implements IEventRepository
@@ -47,9 +46,9 @@ final class EventRepository extends Repository implements IEventRepository
         return !$this->query()
             ->whereBetween('start', [$start, $end])
             ->orWhereBetween('end', [$start, $end])
-            ->whereHas('recurringPattern', function (Builder $query) use ($start) {
+            ->whereHas('recurringPattern', function ($query) use ($start) {
                 $query->where(
-                    function (Builder $query) use ($start) {
+                    function ($query) use ($start) {
                         $query->whereNull('repeat_until')
                             ->orWhere('repeat_until', '>=', $start);
                     }
@@ -58,13 +57,13 @@ final class EventRepository extends Repository implements IEventRepository
     }
 
     /**
-     * @param Builder $query
+     * @param mixed $query
      * @param string $start
      * @param string $end
      *
-     * @return Builder
+     * @return mixed
      */
-    public function filterEventsWithFromToQuery(Builder $query, string $start, string $end): Builder
+    public function filterEventsWithFromToQuery(mixed $query, string $start, string $end): mixed
     {
         $from = date($start);
         $to = date($end);
@@ -73,12 +72,12 @@ final class EventRepository extends Repository implements IEventRepository
     }
 
     /**
-     * @param $query
+     * @param mixed $query
      * @param array $filter
      *
-     * @return Builder
+     * @return mixed
      */
-    protected function filter($query, array $filter): Builder
+    protected function filter(mixed $query, array $filter): mixed
     {
         $filters = [
             StartEndDateFilter::class => [

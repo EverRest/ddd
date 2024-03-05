@@ -11,11 +11,12 @@ use Illuminate\Support\Carbon;
 final class EndDayRule implements Rule
 {
     /**
-     * @param string $start
+     * @param EventModel $event
+     * @param string|null $start
      */
-    public function __construct(
+    public function     __construct(
         protected readonly EventModel $event,
-        protected string $start = '',
+        protected   $start,
     ) {
         if (!$this->start) {
             $this->start = $this->event->start;
@@ -30,7 +31,8 @@ final class EndDayRule implements Rule
      */
     public function passes($attribute, $value): bool
     {
-        $endDate = Carbon::parse($value);
+        $endDate = $value ? Carbon::parse($value) :
+            Carbon::createFromTimestamp($this->event->end);
         $startDate = Carbon::parse($this->start);
 
         return $endDate->diffInHours($startDate) <= 24;
@@ -41,6 +43,6 @@ final class EndDayRule implements Rule
      */
     public function message(): string
     {
-        return 'The event can not be longer then 24 hours. You can create a recurring event instead.';
+        return 'The event cannot be longer than 24 hours. You can create a recurring event instead.';
     }
 }

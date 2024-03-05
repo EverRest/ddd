@@ -4,19 +4,12 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Event\Observers;
 
+use App\Infrastructure\Event\Trait\ObserverMustDropModelCache;
 use App\Infrastructure\Laravel\Model\EventModel;
-use Illuminate\Support\Facades\Artisan;
 
 class EventObserver
 {
-    /**
-     * @var string[] $cachedModels
-     */
-    protected array $cachedModels = [
-        'App\\Infrastructure\\Laravel\Model\\EventModel',
-        'App\\Infrastructure\\Laravel\Model\\RecurringPatternModel',
-        'App\\Infrastructure\\Laravel\Model\\RecurringTypeModel',
-    ];
+    use ObserverMustDropModelCache;
 
     /**
      * Handle the EventModel "created" event.
@@ -48,15 +41,5 @@ class EventObserver
     public function deleted(EventModel $eventModel): void
     {
         $this->dropModelCache();
-    }
-
-    /**
-     * @return void
-     */
-    private function dropModelCache(): void
-    {
-        foreach ($this->cachedModels as $cachedModel) {
-            Artisan::call("modelCache:clear $cachedModel");
-        }
     }
 }
